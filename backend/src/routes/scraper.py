@@ -10,12 +10,12 @@ scraper_manager = ScraperManager()
 
 # Mock authentication for demo purposes
 def get_current_user():
-    """Get current user (mock implementation)"""
     # In a real app, this would validate JWT tokens or session cookies
+    """Retrieve the current user from the database or create a demo user."""
     return User.query.first() or create_demo_user()
 
 def create_demo_user():
-    """Create a demo user if none exists"""
+    """Create a demo user if none exists."""
     user = User.query.filter_by(email='test@example.com').first()
     if not user:
         user = User(username='demo_user', email='test@example.com')
@@ -25,7 +25,7 @@ def create_demo_user():
 
 @scraper_bp.route('/auth/login', methods=['POST'])
 def login():
-    """Mock login endpoint"""
+    """Handles user login and returns a mock JWT token."""
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -45,25 +45,42 @@ def login():
 
 @scraper_bp.route('/auth/user', methods=['GET'])
 def get_user():
-    """Get current user info"""
+    """Returns current user information as a JSON response."""
     user = get_current_user()
     return jsonify(user.to_dict())
 
 @scraper_bp.route('/services', methods=['GET'])
 def get_services():
-    """Get list of available pastebin services"""
+    """Returns a list of available pastebin services."""
     services = scraper_manager.get_available_services()
     return jsonify(services)
 
 @scraper_bp.route('/services/test', methods=['POST'])
 def test_services():
-    """Test connections to pastebin services"""
+    """Test connections to pastebin services."""
     results = scraper_manager.test_service_connections()
     return jsonify(results)
 
 @scraper_bp.route('/sessions', methods=['GET'])
 def get_sessions():
-    """Get user's search sessions"""
+    """Retrieves user's search sessions based on query parameters.
+    
+    This function handles GET requests to the '/sessions' endpoint. It fetches the
+    current user, parses query parameters for pagination and filtering, constructs
+    a query to filter search sessions by status and name if provided, orders them
+    by creation date in descending order, and returns the paginated results as a
+    JSON response.
+    
+    Args:
+        page (int): The page number of the results to retrieve, defaults to 1.
+        per_page (int): The number of items per page, defaults to 20.
+        status (str): The status of the search sessions to filter by, if provided.
+        search (str): The keyword to search for within session names, if provided.
+    
+    Returns:
+        dict: A JSON response containing the list of sessions, total count, total pages,
+            and current page number.
+    """
     user = get_current_user()
     
     # Parse query parameters
@@ -98,7 +115,7 @@ def get_sessions():
 
 @scraper_bp.route('/sessions', methods=['POST'])
 def create_session():
-    """Create a new search session"""
+    """Create a new search session."""
     user = get_current_user()
     data = request.get_json()
     
@@ -125,7 +142,7 @@ def create_session():
 
 @scraper_bp.route('/sessions/<int:session_id>', methods=['GET'])
 def get_session(session_id):
-    """Get a specific search session"""
+    """Retrieve a specific search session by ID."""
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
@@ -136,7 +153,7 @@ def get_session(session_id):
 
 @scraper_bp.route('/sessions/<int:session_id>/start', methods=['POST'])
 def start_session(session_id):
-    """Start a search session"""
+    """Start a search session."""
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
@@ -156,7 +173,7 @@ def start_session(session_id):
 
 @scraper_bp.route('/sessions/<int:session_id>/stop', methods=['POST'])
 def stop_session(session_id):
-    """Stop a running search session"""
+    """Stop a running search session."""
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
@@ -172,7 +189,22 @@ def stop_session(session_id):
 
 @scraper_bp.route('/sessions/<int:session_id>/results', methods=['GET'])
 def get_session_results(session_id):
-    """Get results for a search session"""
+    """Retrieves search results for a specific session.
+    
+    This function handles GET requests to fetch search results associated with a
+    given session ID. It checks if the session exists and belongs to the current
+    user. The function supports filtering by service and file type through query
+    parameters, orders the results by relevance, and paginates them based on
+    request parameters.
+    
+    Args:
+        session_id (int): The ID of the search session for which results are requested.
+    
+    Returns:
+        A JSON response containing the search results, total number of results, total
+            pages,
+        and the current page number.
+    """
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
@@ -211,7 +243,7 @@ def get_session_results(session_id):
 
 @scraper_bp.route('/sessions/<int:session_id>/logs', methods=['GET'])
 def get_session_logs(session_id):
-    """Get logs for a search session"""
+    """Retrieve logs for a specified search session."""
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
@@ -225,7 +257,7 @@ def get_session_logs(session_id):
 
 @scraper_bp.route('/sessions/<int:session_id>/delete', methods=['DELETE'])
 def delete_session(session_id):
-    """Delete a search session"""
+    """Delete a search session by ID."""
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
@@ -244,7 +276,7 @@ def delete_session(session_id):
 
 @scraper_bp.route('/dashboard/stats', methods=['GET'])
 def get_dashboard_stats():
-    """Get dashboard statistics for the user"""
+    """Retrieve and update dashboard statistics for the current user."""
     user = get_current_user()
     
     # Get or create user stats
@@ -287,7 +319,7 @@ def get_dashboard_stats():
 
 @scraper_bp.route('/dashboard/recent-sessions', methods=['GET'])
 def get_recent_sessions():
-    """Get recent search sessions for dashboard"""
+    """Retrieve recent search sessions for the dashboard."""
     user = get_current_user()
     
     sessions = SearchSession.query.filter_by(user_id=user.id)\
@@ -299,7 +331,17 @@ def get_recent_sessions():
 
 @scraper_bp.route('/export/session/<int:session_id>', methods=['GET'])
 def export_session_results(session_id):
-    """Export session results in various formats"""
+    """Exports session results based on specified format.
+    
+    This function retrieves a search session by its ID and the current user, then
+    exports the session results in either JSON or CSV format. If the session is not
+    found, it returns a 404 error. Currently, only JSON export is implemented; CSV
+    export returns a 501 Not Implemented status. Unsupported formats result in a
+    400 Bad Request.
+    
+    Args:
+        session_id (int): The ID of the search session to export results for.
+    """
     user = get_current_user()
     session = SearchSession.query.filter_by(id=session_id, user_id=user.id).first()
     
