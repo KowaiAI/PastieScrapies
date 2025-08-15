@@ -1,6 +1,6 @@
 // API service for communicating with the Flask backend
 
-const API_BASE_URL = 'https://mzhyi8cd76k1.manus.space/api';
+const API_BASE_URL = 'https://60h5imc0n38m.manus.space/api';
 
 class ApiService {
   constructor() {

@@ -22,7 +22,7 @@ app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID', 'demo_client
 app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET', 'demo_client_secret')
 
 # Enable CORS for all routes
-CORS(app, origins=['http://localhost:5173', 'http://localhost:3000', 'https://sfrpskwd.manus.space', 'https://uueswvou.manus.space', 'https://ugumdvps.manus.space', 'https://yuayfmid.manus.space', 'https://avrtlree.manus.space', 'https://ckofpiuv.manus.space', 'https://usvucvfi.manus.space', 'https://zosrwisl.manus.space', 'https://ehnbaygb.manus.space'])
+CORS(app, origins=['http://localhost:5173', 'http://localhost:3000', 'https://sfrpskwd.manus.space', 'https://uueswvou.manus.space', 'https://ugumdvps.manus.space', 'https://yuayfmid.manus.space', 'https://avrtlree.manus.space', 'https://ckofpiuv.manus.space', 'https://usvucvfi.manus.space', 'https://zosrwisl.manus.space', 'https://ehnbaygb.manus.space', 'https://expcgjrr.manus.space', 'https://oenkwdqp.manus.space'])
 
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(scraper_bp, url_prefix='/api')
