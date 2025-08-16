@@ -16,6 +16,7 @@ class User(db.Model):
         return f'<User {self.email}>'
 
     def to_dict(self):
+        """Converts instance attributes to a dictionary."""
         return {
             'id': self.id,
             'username': self.username,

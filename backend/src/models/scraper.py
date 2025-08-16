@@ -28,6 +28,18 @@ class SearchSession(db.Model):
         return f'<SearchSession {self.name}>'
     
     def to_dict(self):
+        """Converts the object's attributes to a dictionary.
+        
+        This method serializes the object's attributes into a dictionary format,
+        handling JSON parsing for `search_terms`, `file_types`, `services`, and
+        `settings`. It also formats date-time fields (`created_at`, `started_at`,
+        `completed_at`) to ISO format if they are not None. The method ensures that
+        empty string values for these JSON fields are converted to appropriate default
+        values (e.g., lists or dictionaries).
+        
+        Args:
+            self: The instance of the class with attributes to be serialized.
+        """
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -66,6 +78,7 @@ class SearchResult(db.Model):
         return f'<SearchResult {self.paste_id}>'
     
     def to_dict(self):
+        """Converts object attributes to a dictionary."""
         return {
             'id': self.id,
             'session_id': self.session_id,
@@ -95,6 +108,7 @@ class SearchLog(db.Model):
         return f'<SearchLog {self.level}: {self.message[:50]}>'
     
     def to_dict(self):
+        """Converts instance attributes to a dictionary."""
         return {
             'id': self.id,
             'session_id': self.session_id,
@@ -121,6 +135,7 @@ class PastebinService(db.Model):
         return f'<PastebinService {self.name}>'
     
     def to_dict(self):
+        """Converts the object's attributes to a dictionary."""
         return {
             'id': self.id,
             'name': self.name,
@@ -148,6 +163,7 @@ class UserStats(db.Model):
         return f'<UserStats user_id={self.user_id}>'
     
     def to_dict(self):
+        """Converts object attributes to a dictionary."""
         return {
             'id': self.id,
             'user_id': self.user_id,

@@ -63,6 +63,16 @@ with app.app_context():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
+    """Serves static files from the configured static folder.
+    
+    This function handles requests to serve static files located in the
+    application's static folder. It first checks if a specific file exists at the
+    requested path. If not, it attempts to serve 'index.html'. If neither the
+    requested file nor 'index.html' exist, it returns a 404 error.
+    
+    Args:
+        path (str): The path of the requested static file relative to the static folder.
+    """
     static_folder_path = app.static_folder
     if static_folder_path is None:
             return "Static folder not configured", 404
